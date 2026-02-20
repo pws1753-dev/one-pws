@@ -18,7 +18,45 @@ const humanizeWebsite = (value = '') => value.replace(/^https?:\/\//i, '');
 
 const buildDepartmentLabel = (value = '') => (value ? ` | ${value.trim()}` : '');
 
-const toPoints = (value = 0) => `${(value * 0.75).toFixed(2)}pt`;
+const toPoints = (value = 0) => {
+  const numericValue =
+    typeof value === 'string' ? parseFloat(value) || 0 : Number.isFinite(value) ? value : 0;
+  return `${(numericValue * 0.75).toFixed(2)}pt`;
+};
+
+const toCssDimension = (value) => {
+  if (typeof value === 'number') {
+    return `${value}px`;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return '';
+    return /^\d+(\.\d+)?$/i.test(trimmed) ? `${trimmed}px` : trimmed;
+  }
+  return '';
+};
+
+const getPixelValue = (value) => {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const match = value.trim().match(/^(\d+(\.\d+)?)(px)?$/i);
+    if (match) {
+      return parseFloat(match[1]);
+    }
+  }
+  return null;
+};
+
+const buildSizeAttributes = (widthValue, heightValue) => {
+  const attrs = [];
+  if (Number.isFinite(widthValue) && widthValue > 0) {
+    attrs.push(`width="${Math.round(widthValue)}"`);
+  }
+  if (Number.isFinite(heightValue) && heightValue > 0) {
+    attrs.push(`height="${Math.round(heightValue)}"`);
+  }
+  return attrs.length ? ` ${attrs.join(' ')}` : '';
+};
 
 const resolveCompany = (company = DEFAULT_COMPANY) => {
   const normalized = (company || DEFAULT_COMPANY).toUpperCase();
@@ -66,7 +104,12 @@ const generateSignatureHtml = ({
   const normalizedSite = normalizeWebsite(website);
   const websiteLabel = humanizeWebsite(website) || normalizedSite;
   const trimmedEmail = (email || '').trim();
-  const { width, height } = profile.logoDimensions;
+  const rawWidth = profile.logoDimensions?.width;
+  const rawHeight = profile.logoDimensions?.height;
+  const widthCss = toCssDimension(rawWidth);
+  const heightCss = toCssDimension(rawHeight);
+  const widthValue = getPixelValue(rawWidth ?? widthCss);
+  const heightValue = getPixelValue(rawHeight ?? heightCss);
 
   template = applyCommonReplacements(template, {
     companyLogo: logoUrl || '',
@@ -78,10 +121,11 @@ const generateSignatureHtml = ({
     email: trimmedEmail,
     brandColor: profile.brandColor,
     formerlyText: profile.formerlyText || '',
-    logoWidth: width,
-    logoHeight: height,
-    logoWidthPt: toPoints(width),
-    logoHeightPt: toPoints(height),
+    logoWidth: widthCss || rawWidth || '',
+    logoHeight: heightCss || rawHeight || '',
+    logoWidthPt: toPoints(widthCss || rawWidth || 0),
+    logoHeightPt: toPoints(heightCss || rawHeight || 0),
+    logoSizeAttributes: buildSizeAttributes(widthValue, heightValue),
   });
 
   template = template.replace(/tel:\{\{mobile\}\}/g, `tel:${sanitizedTel}`);

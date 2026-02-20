@@ -12,7 +12,7 @@ export default {
         steel: '#9E9E9E',
       },
       fontFamily: {
-        sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        sans: ['Arial', 'Helvetica', 'sans-serif'],
       },
       boxShadow: {
         card: '0 20px 60px rgba(0, 0, 0, 0.08)',

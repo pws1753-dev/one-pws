@@ -2,7 +2,7 @@
   <rect width="320" height="120" rx="20" fill="#0A0A0A" />
   <rect x="20" y="34" width="280" height="12" fill="#FFFFFF" opacity="0.35" />
   <rect x="20" y="74" width="280" height="12" fill="#FFFFFF" opacity="0.35" />
-  <text x="28" y="70" font-family="Space Grotesk, Arial, sans-serif" font-weight="700" font-size="44" fill="#D4292B">
+  <text x="28" y="70" font-family="Arial, sans-serif" font-weight="700" font-size="44" fill="#D4292B">
     WMSPL
   </text>
 </svg>
